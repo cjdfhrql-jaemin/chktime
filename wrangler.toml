@@ -9,3 +9,7 @@ enabled = true
 
 [assets]
 directory = "./public"
+
+[[routes]]
+pattern = "chktime.org"
+custom_domain = true

@@ -3,10 +3,10 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"test": "vitest"
+    	"dev_remote": "npm run gen && wrangler dev --remote",
+		"deploy": "wrangler deploy",
+		"push": "git add . && git commit -m \"$npm_config_message\" && git push origin main"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.12.4",
