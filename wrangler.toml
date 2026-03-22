@@ -11,5 +11,5 @@ enabled = true
 directory = "./public"
 
 [[routes]]
-pattern = "chktime.org"
+pattern = "chktime.com"
 custom_domain = true
