@@ -13,9 +13,6 @@ export default function Main({ data }: { data: any }) {
     <button onclick="syncAll()" class="btn-primary">TRACK</button>
   </div>
   
-  <div class="left-side side-ad"><ins class="adsbygoogle"style="display:block" data-ad-client="ca-pub-1216027646063680" data-ad-slot="5535756764" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
-  <div class="right-side side-ad"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1216027646063680" data-ad-slot="8572983644" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
-
   <div class="map-section">
     <div class="map-header"><span>Server Node</span><span id="geoCoords">Global Edge</span></div>
     <div id="map"></div>
