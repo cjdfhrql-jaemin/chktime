@@ -6,7 +6,7 @@
 		"dev": "wrangler dev",
 		"dev_remote": "npm run gen && wrangler dev --remote",
 		"deploy": "wrangler deploy",
-		"push": "git add . && git commit -m \"$1\" && git push origin main"
+		"push": "git add . && git commit -m"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.12.4",
