@@ -41,7 +41,7 @@ app.post('/api/server-info', async (c) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    const t1 = Date.now();
+    const startTime = Date.now();
 
     // 2. 병렬 호출 (속도 최적화)
     const [timeRes, geoRes] = await Promise.all([
@@ -57,16 +57,17 @@ app.post('/api/server-info', async (c) => {
     ]);
 
     clearTimeout(timeoutId);
-    const t2 = Date.now();
-    const rtt = t2 - t1;
 
     const geoData: any = await geoRes.json();
-    if (geoData.status === "fail") throw new Error("Geo Lookup Failed");
+    if (geoData.status === "fail") {
+      throw new Error("Geo Lookup Failed");
+    }
 
     // 3. 시간 계산 로직
     const dateHeader = timeRes.headers.get('date');
     const baseTime = dateHeader ? new Date(dateHeader).getTime() : Date.now();
-    const adjustedTime = baseTime + (rtt / 2);
+    const rtt = baseTime-startTime;
+    const adjustedTime = baseTime + rtt;
 
     // 4. Hono 스타일의 깔끔한 응답
     return c.json({
@@ -97,17 +98,14 @@ app.get('/ws', upgradeWebSocket((c) => {
 
   return {
     onMessage(event, ws) {
-      console.log(`[WS] Connected: ${domain}`);
-
       if (event.data === 'READY') {
-        console.log(`[WS] ${domain} 스캔 시작 신호 수신!`);
 
         // 3. 여기서부터 ws 객체를 자유롭게 사용!
         setTimeout(() => {
           let progress = 0;
 
           const runScan = () => {
-            progress += Math.floor(Math.random() * 2) + 1;  
+            progress += 1;  
             
             if (progress >= 100) {
               ws.send(JSON.stringify({ type: 'PROGRESS', value: 100, status: 'DONE' }));
@@ -117,7 +115,7 @@ app.get('/ws', upgradeWebSocket((c) => {
             // [핵심] 여기서 ws.send() 호출!
             ws.send(JSON.stringify({ type: 'PROGRESS', value: progress, status: 'SCANNING' }));
 
-            const nextTick = Math.floor(Math.random() * 50) + 10;
+            const nextTick = Math.floor(Math.random() * 20) + 2;
             timer = setTimeout(runScan, nextTick);
           };
 

@@ -114,7 +114,7 @@ async function syncAll() {
 
     webSocket.send('READY');
 
-    const waitForProgress = new Promise((resolve) => {
+    const waitForProgress = new Promise((resolve,reject) => {
       webSocket.onmessage = (e) => {
         const msg = JSON.parse(e.data);
         if (msg.type === 'PROGRESS') {
@@ -131,18 +131,25 @@ async function syncAll() {
       webSocket.onclose = () => reject("WebSocket Closed");
     });
 
+    try {
+        await fetch(\`https://\${target}\`, { method: 'HEAD', mode: 'no-cors', signal: AbortSignal.timeout(500) });
+    } catch (e) {
+        webSocket.close();
+        throw new Error("접속 불가");
+    }
+
     const res = await fetch('/api/server-info', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url: target })
     });
 
-    await waitForProgress;
-
     if (!res.ok) {
+        webSocket.close();
         throw new Error();
     }
 
+    await waitForProgress;
     const data = await res.json();
 
     marker.closePopup();
