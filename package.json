@@ -6,7 +6,7 @@
 		"dev": "wrangler dev",
 		"dev_remote": "npm run gen && wrangler dev --remote",
 		"deploy": "wrangler deploy",
-		"push": "git add . && git commit -m \"$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')\" && git push origin main"
+		"push": "git add . && node -e \"const d=new Date(); const s=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2); require('child_process').execSync('git commit -m \\\"' + s + '\\\"')\" && git push origin main"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.12.4",
