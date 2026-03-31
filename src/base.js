@@ -14,7 +14,7 @@ function robots_txt(url) {
     return `User-agent: *
 Allow: /
 
-nSitemap: https://${url.host}/sitemap.xml`;
+nSitemap: https://${url.host}/sitemap.xml`; 
 }
 
 function security_txt(url) {

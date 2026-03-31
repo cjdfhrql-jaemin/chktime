@@ -12,7 +12,7 @@
 		"d1_store_deploy": "npx wrangler d1 execute mindb --local --file=./remote_data.sql",
 		"d1_library": "npm install drizzle-orm mysql2",
 		"d1_scan": "npx wrangler d1 execute mindb --remote --command"
-	},
+	}, 
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.12.4",
 		"vitest": "~3.2.0",
