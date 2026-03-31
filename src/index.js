@@ -1,15 +1,20 @@
 import { Hono } from 'hono'
+
 import { getLanguage } from './functions/lang'
 import { Pages } from './pages'
 import { Layout } from './layout.jsx'
 import { handleBase } from './base.js'
-import articleRoute from './pages/article/index.js'
-import apiRoute from './functions/index.js'
+
 import { getConnection } from './functions/db_conn.js';
 import { sql } from 'drizzle-orm'
+import { prettyHtml } from './functions/pretty-html.js'
+
+import articleRoute from './pages/article/index.js'
+import apiRoute from './functions/api/index.js'
 
 /** @jsx jsx */
 import { jsx } from 'hono/jsx'
+
 
 const domain = 'chktime.com';
 const app = new Hono();
@@ -65,6 +70,17 @@ app.use('*', async (c, next) => {
 	});
 
 	await next();
+
+	const contentType = c.res.headers.get('Content-Type');
+	if(contentType && contentType.includes('text/html')) {
+		const html = await c.res.text();
+		const prettyHTMLResult = await prettyHtml(html);
+		c.res = new Response(prettyHTMLResult, {
+            status: c.res.status,
+            statusText: c.res.statusText,
+            headers: c.res.headers
+        });
+	}
 });
 
 app.get('/', async (c) => {
