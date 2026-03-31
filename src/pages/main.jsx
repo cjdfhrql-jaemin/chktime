@@ -115,9 +115,12 @@ export const Main = ({ data, results }) => {
 					data-ad-slot="6774926052"
 					data-ad-format="auto"
 					data-full-width-responsive="true"></ins>
-				<script>
-					(adsbygoogle = window.adsbygoogle || []).push({ });
-				</script>
+				
+					<script
+						dangerouslySetInnerHTML={{
+							__html: `(adsbygoogle = window.adsbygoogle || []).push({});`
+						}}
+					/>
 			</div>
 			<script dangerouslySetInnerHTML={{
 				__html: `
