@@ -111,15 +111,12 @@ app.get('/', async (c) => {
 app.route('/api', apiRoute);
 app.route('/article', articleRoute);
 
-const pages = import.meta.glob('./pages/*.jsx');
-app.get('/:page', async (c) => {
+app.get('/:page', (c) => {
 	const { page } = c.req.param();
 	const pageKey = page.toLowerCase();
+	let Component = Pages[pageKey];
 
-	const module = await import(`./pages/${page}.jsx`);
-	const Component = module.default;
-
-	if (!module) {
+	if (!Component) {
 		return c.notFound();
 	}
 
