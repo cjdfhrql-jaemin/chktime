@@ -111,18 +111,21 @@ app.get('/', async (c) => {
 app.route('/api', apiRoute);
 app.route('/article', articleRoute);
 
-app.get('/:page', (c) => {
+const pages = import.meta.glob('./pages/*.jsx');
+app.get('/:page', async (c) => {
 	const { page } = c.req.param();
-	const data = c.get('data');
-	const host = c.req.header('host') || domain;
-
 	const pageKey = page.toLowerCase();
-	let Component = Pages[pageKey];
 
-	if (!Component) {
+	const module = await import(`./pages/${page}.jsx`);
+	const Component = module.default;
+
+	if (!module) {
 		return c.notFound();
 	}
 
+	const host = c.req.header('host') || domain;
+	const data = c.get('data');
+	
 	return c.html(
 		<Layout title={host}>
 			<Component data={data} />
