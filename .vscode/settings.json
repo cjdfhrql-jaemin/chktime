@@ -1,5 +1,14 @@
 {
 	"files.associations": {
 		"wrangler.json": "jsonc"
-	}
+	},
+	"sqltools.connections": [
+		{
+			"previewLimit": 50,
+			"driver": "SQLite",
+			"name": "mindb",
+			"database": "${workspaceFolder:chktime}/.wrangler/state/v3/d1/miniflare-D1DatabaseObject/985a7fc1741ed1a291164f2d8d063b53504b307026bd34f2dbc16cf339bf26cb.sqlite"
+		}
+	],
+	"sqltools.useNodeRuntime": true
 }

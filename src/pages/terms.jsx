@@ -1,7 +1,7 @@
 import { html } from 'hono/html'
 
 // lang 데이터를 인자로 받아서 화면을 구성함
-export default function Terms({ data }: { data: any }) {
+export default function Terms({ data }) {
     const lang = data.lang;
     return html`
 <div id="policy-view" class="animate-fade">
