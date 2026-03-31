@@ -91,13 +91,14 @@ article.recent-searches ul li .item .hit-count {
 }
 
 .side-ad {position: fixed;top:2em;width: 180px;z-index:1;}
-.side-ad.left-side {right: 50%;transform: translateX(-480px);}
-.side-ad.right-side {left: 50%;transform: translateX(480px);}
+.side-ad.left-side {left: 5vw;25%: translateX(-480px);}
+.side-ad.right-side {right: 5vw;}
 
 .content-ad {position:relative;min-height: 300px;width:100%;margin-top: 2rem;}
-.content-ad::after {content:"AD";position:absolute;top: 10px;left: 10px;color:var(--dim);font-size: 12px;font-style: italic;}
+
 [class$=-ad] {background: var(--card);border-radius: 20px;padding: 15px;box-sizing: border-box;}
-@media (max-width: 1210px) {
+[class$=-ad]:before {content:"AD";position:absolute;top: 10px;left: 10px;color:var(--dim);font-size: 12px;font-style: italic;}
+@media (max-width: 1280px) {
   .side-ad { display: none; }
 }
 
