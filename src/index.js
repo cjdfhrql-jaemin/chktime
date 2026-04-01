@@ -14,36 +14,12 @@ import apiRoute from './functions/api/index.js'
 
 /** @jsx jsx */
 import { jsx } from 'hono/jsx'
-import { drizzle } from 'drizzle-orm/d1';
-import { desc } from 'drizzle-orm';
 
 const domain = 'chktime.com';
 const app = new Hono();
 
 app.notFound((c) => {
 	return c.body(null, 204);
-});
-
-app.get("/db-test", async (c) => {
-	let db;
-
-	try {
-		db = await getConnection(c);
-		const result = await db.execute(sql`SELECT 1`);
-
-		return c.json({
-			success: true,
-			data: result,
-		});
-
-	} catch (e) {
-		console.error(e);
-		return c.json({
-			success: false,
-			error: e.message,
-		});
-
-	}
 });
 
 app.use('*', async (c, next) => {
@@ -85,12 +61,14 @@ app.use('*', async (c, next) => {
 });
 
 import Domains from './functions/db/domains.js';
+import { drizzle } from 'drizzle-orm/d1'
 
 app.get('/', async (c) => {
 	const data = c.get('data');
 	const host = c.req.header('host') || 'chktime.com';
 	const Main = Pages.main;
-	const dao = new Domains(drizzle(c.env.DB));
+	const db = drizzle(c.env.DB);
+	const dao = Domains.getInstance(db);
 	const results = await dao.getList({ orders: { hit_count: 'desc' } });
 	data.results = results;
 

@@ -1,21 +1,17 @@
-import { eq,desc,asc } from 'drizzle-orm';
+import { eq,desc,asc,and } from 'drizzle-orm';
 
 export class CommonDao {
     static instances = new Map();
-    
-    static getInstance(db, table) {
-        const key = table.toString();
-        if (!CommonDao.instances.has(key)) {
-            CommonDao.instances.set(key, new CommonDao(db, table));
-        }
-        return CommonDao.instances.get(key);
+
+    static getInstance() {
+        throw new Error("getInstance()는 자식 클래스에서 구현");
     }
     
-    constructor(db, table) {
-        this.db = db; 
+    constructor(drizzleWrapper, table) {
+        this.db = drizzleWrapper; 
         this.table = table;
     }
-
+    
     async getList({ columns = {}, wheres = {}, orders = {}, groups = [], limit = 10 }) {
 
         let query = Object.keys(columns).length > 0
