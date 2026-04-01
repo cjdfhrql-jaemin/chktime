@@ -1,27 +1,4 @@
-// 도메인 조회수 업데이트.
-const upsertDomainHit = async (db, domain) => {
-	// table : tb_chktime_domain
-	// 조건 : 하루 단위로 INSERT 가 일어남
-
-    const query = `
-INSERT INTO 
-    tb_chktime_domain (domain, hit_count, search_date) 
-VALUES 
-    (?, 1, CURRENT_DATE) 
-ON 
-    CONFLICT(domain, search_date) 
-DO 
-    UPDATE SET 
-        hit_count = hit_count + 1;`;
-    try {
-        const result = await db.prepare(query).bind(domain).run();
-        return result.success;
-
-    } catch (e) {
-        console.error(`[D1 Error] Failed to upsert hit for ${domain}:`, e.message);
-    }
-};
-
+import Domains from "../db/domains";
 
 // [메인 핸들러]
 export const handleServerInfo = async (c) => {
@@ -31,7 +8,9 @@ export const handleServerInfo = async (c) => {
     try {
         const body = await c.req.json().catch(() => ({}));
         let domain = body.url?.startsWith("http") ? new URL(body.url).hostname : body.url;
-        if (!domain) throw new Error("Invalid Domain");
+        if (!domain) {
+            throw new Error("Invalid Domain");
+        }
 
         // 1. 위치 정보는 백그라운드 병렬 시작
         const geoPromise = fetch(`http://ip-api.com/json/${domain}?fields=status,message,lat,lon,city,country,timezone`, {
@@ -96,9 +75,13 @@ export const handleServerInfo = async (c) => {
 		const encodedDomain = btoa(domain).replace(/=/g, "");
         const hitCookieName = `hit_${encodedDomain}`;
         if (!(c.req.header("cookie") || "").includes(hitCookieName)) {
-            const isSuccess = await upsertDomainHit(c.env.DB, domain);
-            if (isSuccess) {
-                c.header("Set-Cookie", `${hitCookieName}=1; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax`);
+            try {
+                const isSuccess = await domains.updateHitCount(c.env.DB, domain);
+                if (isSuccess) {
+                    c.header("Set-Cookie", `${hitCookieName}=1; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax`);
+                }
+            } catch (error) {
+                console.error("DB update failed:", error);
             }
         }
 

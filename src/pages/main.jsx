@@ -4,7 +4,7 @@ import { html } from 'hono/html'
 import { jsx } from 'hono/jsx'
 
 // 1. TS 타입 주석 제거
-export const Main = ({ data, results }) => {
+export const Main = ({ data }) => {
 
 	return (
 		<div id="home-view" class="animate-fade">
@@ -26,7 +26,7 @@ export const Main = ({ data, results }) => {
 			<article class="recent-searches">
 				<h1>Recent Searches</h1>
 				<ul>
-					{results.map((result) => (
+					{data.results.map((result) => (
 						<li>
 							<div class="item">
 								<a href={`#`}>{result.domain}</a>
