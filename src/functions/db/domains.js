@@ -15,8 +15,8 @@ export class Domains extends CommonDao {
         return CommonDao.instances.get(key);
     }
 
-    async updateHitCount(domain) {
-        return await this.db.update(t).set({ hit_count: sql`${t.hit_count} + 1` }).where(eq(t.domain, domain)).run();
+    updateHitCount(domain) {
+        return this.db.update(t).set({ hit_count: sql`${t.hit_count} + 1` }).where(eq(t.domain, domain)).run();
     }
 }
 

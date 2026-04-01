@@ -85,9 +85,9 @@ app.route('/article', articleRoute);
 app.get('/:page', async (c) => {
 	const { page } = c.req.param();
 	const paths = [
+		`./pages/main.jsx`,
 		`./pages/${page}.jsx`,
-		`./pages/${page}/index.jsx`,
-		`./pages/main.jsx`
+		`./pages/${page}/index.jsx`
 	];
 	let Component = null; 
 

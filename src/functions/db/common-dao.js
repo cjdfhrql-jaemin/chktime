@@ -12,7 +12,7 @@ export class CommonDao {
         this.table = table;
     }
     
-    async getList({ columns = {}, wheres = {}, orders = {}, groups = [], limit = 10 }) {
+    getList({ columns = {}, wheres = {}, orders = {}, groups = [], limit = 10 }) {
 
         let query = Object.keys(columns).length > 0
             ? this.db.select(columns).from(this.table)
@@ -43,22 +43,22 @@ export class CommonDao {
             query = query.orderBy(...orderByFields);
         }
 
-        return await query.limit(limit).all();
+        return query.limit(limit).all();
     }
 
     // 공통: 단일 조회 (id 기준)
-    async getDataById(id) {
-        return await this.db.select().from(this.table).where(eq(this.table.id, id)).get();
+    getDataById(id) {
+        return this.db.select().from(this.table).where(eq(this.table.id, id)).get();
     }
 
     // 3. 삽입
-    async insert(data) {
-        return await this.db.insert(this.table).values(data).run();
+    insert(data) {
+        return this.db.insert(this.table).values(data).run();
     }
 
     // 4. 수정
-    async update(data, idKey = 'id') {
-        return await this.db.update(this.table)
+    update(data, idKey = 'id') {
+        return this.db.update(this.table)
             .set(data)
             .where(eq(this.table[idKey], data[idKey]))
             .run();
