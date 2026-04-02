@@ -1,9 +1,9 @@
+import { drizzle } from "drizzle-orm/d1";
 import Domains from "../db/domains";
 
 // [메인 핸들러]
 export const handleServerInfo = async (c) => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 정밀 측정을 위해 넉넉히
 
     try {
         const body = await c.req.json().catch(() => ({}));
@@ -29,12 +29,12 @@ export const handleServerInfo = async (c) => {
             while (attempts < maxAttempts) {
                 const t0 = Date.now();
                 const res = await fetch(`https://sub.hh.pe.kr/api/date?domain=${domain}`, {
-                    headers: { "Cache-Control": "no-cache",  "User-Agent": "Mozilla/5.0 (chktime.com)" },
-                    signal: AbortSignal.timeout(5000)
+                    headers: { "Cache-Control": "no-cache", "User-Agent": "Mozilla/5.0 (chktime.com)" },
+                    signal: controller.signal
                 });
                 const data = await res.json();
                 const t1 = Date.now();
-                
+
                 const rtt = t1 - t0;
                 const serverDate = new Date(data.result);
                 const currentSec = serverDate.getSeconds();
@@ -42,8 +42,8 @@ export const handleServerInfo = async (c) => {
                 // 초(Second)가 방금 막 바뀌었다면? (예: 59초 -> 00초)
                 if (prevSec !== null && currentSec !== prevSec) {
                     // 이 순간의 서버 시간은 정확히 [서버초]:000ms 라고 간주함
-                    const exactServerMs = serverDate.getTime(); 
-                    
+                    const exactServerMs = serverDate.getTime();
+
                     // 응답이 서버에서 출발한 시점(t1 - rtt/2)과 
                     // 서버의 000ms 지점 사이의 오차(Offset) 계산
                     const arrivalTimeAtLocal = t1 - (rtt / 2);
@@ -56,8 +56,8 @@ export const handleServerInfo = async (c) => {
                 attempts++;
                 // 다음 틱을 기다리기 위해 아주 짧게 대기 (50ms)
                 await new Promise(r => setTimeout(r, 100));
-			}
-			
+            }
+
             return null; // 실패 시 폴백
         };
 
@@ -69,19 +69,24 @@ export const handleServerInfo = async (c) => {
         // 최종 보정된 시간 생성
         // (로컬 시간 + 계산된 오차값)을 더하면 서버의 ms 단위 현재 시간과 일치함
         const now = Date.now();
-        const calibratedTime = syncData ? new Date(now + syncData.offset)  : new Date(); // 실패 시 로컬 시간
+        const calibratedTime = syncData ? new Date(now + syncData.offset) : new Date(); // 실패 시 로컬 시간
 
-		// 3. DB 히트수 및 쿠키 (WaitUntil로 성능 확보)
-		const encodedDomain = btoa(domain).replace(/=/g, "");
+        // 3. DB 히트수 및 쿠키 (WaitUntil로 성능 확보)
+        const encodedDomain = btoa(domain).replace(/=/g, "");
         const hitCookieName = `hit_${encodedDomain}`;
-        if (!(c.req.header("cookie") || "").includes(hitCookieName)) {
+        const hasCookie = (c.req.header("cookie") || "").includes(hitCookieName);
+
+        const db = drizzle(c.env.DB);
+        const domains = Domains.getInstance(db);
+
+        if (!hasCookie) {
             try {
-                const isSuccess = await domains.updateHitCount(c.env.DB, domain);
-                if (isSuccess) {
-                    c.header("Set-Cookie", `${hitCookieName}=1; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax`);
-                }
+                await domains.upsertHitCount(domain);
+
+                // 3. 다시는 오늘 못 올리게 쿠키 발급 (24시간 유지)
+                c.header("Set-Cookie", `${hitCookieName}=1; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax`);
             } catch (error) {
-                console.error("DB update failed:", error);
+                console.error("조회수 업데이트 실패:", error);
             }
         }
 
@@ -101,7 +106,6 @@ export const handleServerInfo = async (c) => {
     } catch (e) {
         return c.json({ error: e.message }, 400);
     } finally {
-        clearTimeout(timeoutId);
         controller.abort();
     }
 };

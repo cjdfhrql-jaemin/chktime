@@ -1,42 +1,46 @@
 import { Hono } from 'hono'
 
 import { getLanguage } from './functions/lang'
-import { Pages } from './pages'
-import { Layout } from './layout.jsx'
+import { Layout } from './pages/layout/template.jsx'
 import { handleBase } from './base.js'
 
-import { getConnection } from './functions/db_conn.js';
-import { sql } from 'drizzle-orm'
 import { prettyHtml } from './functions/pretty-html.js'
 
-import articleRoute from './pages/article/index.js'
-import apiRoute from './functions/api/index.js'
+import articleRoute from './pages/article/article-route.js'
+import apiRoute from './functions/api/api-route.js'
 
 /** @jsx jsx */
 import { jsx } from 'hono/jsx'
 
-const domain = 'chktime.com';
 const app = new Hono();
 
 app.notFound((c) => {
 	return c.body(null, 204);
 });
 
+app.get('/assets/*', async (c, next) => {
+	await next();
+
+	c.res.headers.append('Cache-Control', 'public, max-age=31536000, immutable');
+});
+
 app.use('*', async (c, next) => {
 	const url = new URL(c.req.url);
 	const pathname = url.pathname;
 
+	if (pathname.includes('.')) {
+		return next();
+	}
+
 	try {
+
 		const baseResponse = handleBase(url);
 		if (baseResponse) {
 			return baseResponse;
 		}
+
 	} catch (error) {
 		return c.notFound();
-	}
-
-	if (pathname.includes('.') || pathname.startsWith('/assets/')) {
-		return await next();
 	}
 
 	const cf = c.req.raw.cf || {};
@@ -66,10 +70,10 @@ import { drizzle } from 'drizzle-orm/d1'
 app.get('/', async (c) => {
 	const data = c.get('data');
 	const host = c.req.header('host') || 'chktime.com';
-	const Main = Pages.main;
+	const Main = (await import('./pages/main.jsx')).default;
 	const db = drizzle(c.env.DB);
-	const dao = Domains.getInstance(db);
-	const results = await dao.getList({ orders: { hit_count: 'desc' } });
+	const domains = Domains.getInstance(db);
+	const results = await domains.getList({ orders: { hit_count: 'desc' } });
 	data.results = results;
 
 	return c.html(
@@ -84,27 +88,20 @@ app.route('/article', articleRoute);
 
 app.get('/:page', async (c) => {
 	const { page } = c.req.param();
-	const paths = [
-		`./pages/main.jsx`,
-		`./pages/${page}.jsx`,
-		`./pages/${page}/index.jsx`
-	];
-	let Component = null; 
 
-	for (const path of paths) {
-		try {
-			const jsxFile = await import(path);
-			Component = jsxFile.default;
-			break; // 찾았으면 지체 없이 stop!
-		} catch (e) {
-		}
-	}
+	let module = null; 
 
-	if (!Component) {
-		return c.notFound();
-	}
+	for (const ext of ['.jsx', '/index.jsx']) {
+        try {
+            module = await import(`./pages/${page}${ext}`);
+        } catch (e) {
+            continue; // 에러 나면(파일 없으면) 다음 확장자 시도
+        }
+    }
 
-	const host = c.req.header('host') || domain;
+    const Component = module.default;
+
+	const host = c.req.header('host') || 'chktime.com';
 	const data = c.get('data');
 
 	return c.html(

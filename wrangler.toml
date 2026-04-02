@@ -19,6 +19,11 @@ binding = "DB"
 database_name = "mindb"
 database_id = "64a01a5b-bab5-4f70-a226-2b6d5e919721"
 
+[[d1_databases]]
+binding = "FEED_DB"
+database_name = "microfeed_feed_db_production"
+database_id = "a5872371-2959-43c8-af3f-cf1188d8323d"
+
 [[hyperdrive]]
 binding = "HH_DB"
 id = "e59a2e35c40147149fa08190a6a5de40"

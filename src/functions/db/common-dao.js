@@ -1,7 +1,14 @@
 import { eq,desc,asc,and } from 'drizzle-orm';
+/**
+ * @typedef {import('drizzle-orm/d1').DrizzleD1Database | import('drizzle-orm/mysql-core').MySqlDatabase<any, any>} DrizzleInstance
+ */
 
 export class CommonDao {
     static instances = new Map();
+    
+    /** @type {DrizzleInstance} */ // <-- 이 한 줄이 자동완성의 마법을 부림
+    db;
+    table;
 
     static getInstance() {
         throw new Error("getInstance()는 자식 클래스에서 구현");

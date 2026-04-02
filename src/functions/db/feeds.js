@@ -7,6 +7,8 @@ export class Domains extends CommonDao {
         const key = `Domains_${drizzleWrapper.constructor.name}`;
 
         if (!CommonDao.instances.has(key)) {
+            // ⭐️ 부모(CommonDao)가 아니라 나(Domains)를 직접 생성!
+            // 이렇게 해야 updateHitCount 메서드가 포함된 객체가 Map에 저장돼.
             CommonDao.instances.set(key, new Domains(drizzleWrapper, t));
         }
 
