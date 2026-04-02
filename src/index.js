@@ -99,6 +99,10 @@ app.get('/:page', async (c) => {
         }
     }
 
+	if(!module) {
+		return c.notFound();
+	}
+	
     const Component = module.default;
 
 	const host = c.req.header('host') || 'chktime.com';
