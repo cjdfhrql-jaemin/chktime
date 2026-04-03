@@ -8,16 +8,10 @@ import { CommonDao } from './common-dao';
  */
 export class Domains extends CommonDao {
 
-    static getInstance(drizzleWrapper) {
-        const key = `Domains_${drizzleWrapper.constructor.name}`;
-
-        if (!CommonDao.instances.has(key)) {
-            CommonDao.instances.set(key, new Domains(drizzleWrapper, t));
-        }
-
-        return CommonDao.instances.get(key);
+    constructor(drizzleWrapper) {
+        super(drizzleWrapper, t);
     }
-
+    
     upsertHitCount(domain) {
         return this.db.insert(this.table)
             .values({

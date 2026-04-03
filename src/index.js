@@ -72,7 +72,7 @@ app.get('/', async (c) => {
 	const host = c.req.header('host') || 'chktime.com';
 	const Main = (await import('./pages/main.jsx')).default;
 	const db = drizzle(c.env.DB);
-	const domains = Domains.getInstance(db);
+	const domains = new Domains(db);
 	const results = await domains.select({ orders: { hit_count: 'desc' } });
 	data.results = results;
 
