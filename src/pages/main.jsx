@@ -115,12 +115,12 @@ export const Main = ({ data }) => {
 					data-ad-slot="6774926052"
 					data-ad-format="auto"
 					data-full-width-responsive="true"></ins>
-				
-					<script
-						dangerouslySetInnerHTML={{
-							__html: `(adsbygoogle = window.adsbygoogle || []).push({});`
-						}}
-					/>
+
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `(adsbygoogle = window.adsbygoogle || []).push({});`
+					}}
+				/>
 			</div>
 			<script dangerouslySetInnerHTML={{
 				__html: `
@@ -135,8 +135,6 @@ const $ = (selector) => {
 
 const MAP_CONFIG = {zoomLevel: 14, flyDuration: 1.5, initialZoom: 3};
 let map, marker, clockInterval = null, offset = 0;
-let currentTimeZone = "${data.cf?.timezone || 'Asia/Seoul'}";
-let clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 let currentDomain = null;
 
 let WS = {
@@ -204,13 +202,16 @@ function initHome() {
 	});
 }
 
-const timeFormatter = new Intl.DateTimeFormat('ko-KR', {
-    hour: '2-digit', 
-    minute: '2-digit', 
-    second: '2-digit',
-    hour12: false, 
-    timeZone: 'Asia/Seoul'
-});
+let timeFormatter = null;
+function getTimeFormatter(timeZone) {
+    return new Intl.DateTimeFormat('ko-KR', {
+		hour: '2-digit', 
+		minute: '2-digit', 
+		second: '2-digit',
+		hour12: false, 
+		timeZone: timeZone
+	});
+}
 
 function updateClock() {
 	const popupClock = document.querySelector('.leaflet-popup-content #popup-clock');
@@ -291,6 +292,7 @@ async function syncAll(url) {
 		}
 
 		const data = await res.json();
+		timeFormatter = getTimeFormatter(data.timezone);
 
 		if (data.precision === "ms_calibrated") {
 			const serverMs = new Date(data.dateHeader).getTime() + data.milliseconds;
@@ -304,7 +306,6 @@ async function syncAll(url) {
 		// 4. 지도 업데이트
 		marker.closePopup();
 		marker.unbindPopup();
-		currentTimeZone = data.timezone;
 
 		const newPos = [data.lat, data.lng];
 		map.flyTo(newPos, MAP_CONFIG.zoomLevel, {duration: MAP_CONFIG.flyDuration });
