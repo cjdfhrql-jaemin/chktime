@@ -77,7 +77,7 @@ export const handleServerInfo = async (c) => {
         const hasCookie = (c.req.header("cookie") || "").includes(hitCookieName);
 
         const db = drizzle(c.env.DB);
-        const domains = Domains.getInstance(db);
+        const domains = new Domains(db);
 
         if (!hasCookie) {
             try {
