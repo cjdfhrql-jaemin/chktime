@@ -73,7 +73,7 @@ app.get('/', async (c) => {
 	const Main = (await import('./pages/main.jsx')).default;
 	const db = drizzle(c.env.DB);
 	const domains = Domains.getInstance(db);
-	const results = await domains.getList({ orders: { hit_count: 'desc' } });
+	const results = await domains.select({ orders: { hit_count: 'desc' } });
 	data.results = results;
 
 	return c.html(

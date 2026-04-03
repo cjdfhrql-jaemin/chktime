@@ -1,0 +1,8 @@
+{
+	"hh_db": {
+		"disableEval": true,
+		"waitForConnections": true,
+		"connectionLimit": 1,
+		"connectTimeout": 5000
+	}
+}
