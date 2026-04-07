@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"dev": "wrangler dev",
+		"dev": "npx wrangler dev --ip 0.0.0.0 --port 8787",
 		"dev_remote": "npx wrangler dev --remote --inspector-port 9229",
 		"deploy": "wrangler deploy",
 		"push": "git add . && node -e \"const d=new Date(); const s=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2); try { require('child_process').execSync('git commit -m \\\"' + s + '\\\"'); } catch (e) { console.log('No changes to commit'); }\" && git push origin main",
@@ -12,13 +12,14 @@
 		"d1_store_deploy": "npx wrangler d1 execute mindb --local --file=./remote_data.sql",
 		"d1_library": "npm install drizzle-orm mysql2",
 		"d1_scan": "npx wrangler d1 execute mindb --remote --command"
-	}, 
+	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.12.4",
 		"vitest": "~3.2.0",
 		"wrangler": "^4.76.0"
 	},
 	"dependencies": {
+		"drizzle-kit": "^0.31.10",
 		"drizzle-orm": "^0.45.2",
 		"hono": "^4.12.9",
 		"mysql2": "^3.20.0"

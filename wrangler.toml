@@ -9,6 +9,10 @@ enabled = true
 
 [assets]
 directory = "./public"
+binding = "STATIC"
+
+[build]
+upload_include = ["public/metafiles/*"]
 
 [[routes]]
 pattern = "chktime.com"

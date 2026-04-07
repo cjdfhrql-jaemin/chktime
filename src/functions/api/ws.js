@@ -59,3 +59,5 @@ export const handleWebSocket = upgradeWebSocket((c) => {
     }
   };
 })
+
+export default handleWebSocket;

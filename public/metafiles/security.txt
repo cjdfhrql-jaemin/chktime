@@ -1,0 +1,4 @@
+Contact: mailto:ljmsp83@naver.com
+Policy: https://{{domain}}/policy
+Expires: {{currentYear}}-12-31T23:59:59.000Z
+Preferred-Languages: ko, en

@@ -1,0 +1,22 @@
+{
+	"name": "체크타임 (ChkTime)",
+	"short_name": "ChkTime",
+	"description": "도메인의 정확한 시간을 확인하는 최고의 도구",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#ffffff",
+	"theme_color": "#000000",
+	"icons": [
+		{
+			"src": "{{domain}}/assets/icon-192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "{{domain}}/assets/icon-512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "any maskable"
+		}
+	]
+}

@@ -1,4 +1,3 @@
-import { drizzle } from "drizzle-orm/d1";
 import Domains from "../db/domains";
 
 // [메인 핸들러]
@@ -76,8 +75,7 @@ export const handleServerInfo = async (c) => {
         const hitCookieName = `hit_${encodedDomain}`;
         const hasCookie = (c.req.header("cookie") || "").includes(hitCookieName);
 
-        const db = drizzle(c.env.DB);
-        const domains = new Domains(db);
+        const domains = new Domains(c.env.DB);
 
         if (!hasCookie) {
             try {
@@ -109,3 +107,5 @@ export const handleServerInfo = async (c) => {
         controller.abort();
     }
 };
+
+export default handleServerInfo;

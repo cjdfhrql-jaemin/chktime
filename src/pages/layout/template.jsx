@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx, Fragment } from 'hono/jsx'
+import { jsx } from 'hono/jsx'
 
 import { Head } from './head.jsx'
 import { Footer } from './footer.jsx'
@@ -45,6 +45,7 @@ export const Layout = ({ title, children }) => {
 				<main id="app" class="container">
 					{children} {/* props.children이 아니라 인자로 받은 children 사용 */}
 				</main>
+				
 				<Footer />
 			</body>
 		</html>

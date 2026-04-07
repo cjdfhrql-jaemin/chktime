@@ -1,0 +1,11 @@
+/* TEAM */
+Developer: Jaemin Lee
+Contact: ljmsp83@naver.com
+Location: Seoul, South Korea
+Site: HH.PE.KR, CHKIP.ORG, CHKTIME.COM, DREAMTICS.NET
+
+/* SITE */
+Last update: {{currentYear}}/01/01
+Software: Cloudflare Workers, Gemini AI
+Standards: HTML5, CSS3, RFC 9116
+Standards: PHP, JSP, HTML5, CSS3, JAVASCRIPT, RFC 9116

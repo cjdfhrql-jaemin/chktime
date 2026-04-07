@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-import { handleServerInfo } from "./server-info";
-import { handleWebSocket } from "./ws";
+import handleWebSocket from "../functions/api/ws";
+import handleServerInfo from "../functions/api/server-info";
 
 const apiRoute = new Hono();
 
