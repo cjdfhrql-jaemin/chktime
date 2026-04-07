@@ -315,9 +315,9 @@ async function syncAll(url) {
 		<div class="popup-title">⏱ \${target.toUpperCase()}</div>
 		<div id="popup-clock" class="popup-clock">00:00:00.0</div>
 		<div class="popup-info">
-			<strong>Location:</strong> \${data.city}, \${data.country}<br />
-			<strong>RTT:</strong> \${rtt}ms<br />
-			<strong>Coords:</strong> \${data.lat.toFixed(4)}, \${data.lng.toFixed(4)}
+			<strong>Location : </strong> \${data.city}, \${data.country}<br />
+			<strong>Latency : </strong> \${rtt}ms<br />
+			<strong>Coords : </strong> \${data.lat.toFixed(4)}, \${data.lng.toFixed(4)}
 		</div>
 		\`;
 

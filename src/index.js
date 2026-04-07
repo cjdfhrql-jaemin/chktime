@@ -11,6 +11,21 @@ import { jsx } from 'hono/jsx'
 
 const app = new Hono();
 
+const getDomain = (c) => { 
+	const encoded = c.req.header('x-encoded-host');
+	let domain = 'chktime.com'; // 기본값
+
+	if (encoded) {
+		try {
+			// Base64를 다시 텍스트로 변환
+			domain = atob(encoded); 
+		} catch (e) {
+			console.error('인코딩 오류:', e);
+		}
+	}
+	return domain || c.req.header('host');
+}
+
 app.use('*', async (c, next) => {
 	if (c.req.path.startsWith('/api')) {
 		if (typeof next === 'function') {
@@ -25,20 +40,26 @@ app.use('*', async (c, next) => {
 		return metaResponse;
 	}
 
+	const domain = getDomain(c);
 	const cf = c.req.raw.cf || {};
 	c.set('data', {
 		lang: getLanguage(cf),
 		userLat: cf.latitude || 37.5665,
-		userLng: cf.longitude || 126.9780
+		userLng: cf.longitude || 126.9780,
+		host: domain
 	});
 
 	if (typeof next === 'function') {
 		await next();
 	}
 
-	const contentType = c.res.headers.get('Content-Type');
-	if (contentType && contentType.includes('text/html')) {
-		await prettyHtml(c);
+	
+	const host = domain || c.req.header('host');
+	if (host.startsWith('local.hh.pe.kr')) {
+		const contentType = c.res.headers.get('Content-Type');
+		if (contentType && contentType.includes('text/html')) {
+			await prettyHtml(c);
+		}
 	}
 });
 
@@ -55,7 +76,7 @@ import Main from './pages/main.jsx';
 
 app.get('/', async (c) => {
 	const data = c.get('data');
-	const host = c.req.header('host') || 'chktime.com';
+	const host = data.host;
 	const domains = new Domains(c.env.DB);
 	const results = await domains.getList({ orders: { hit_count: 'desc' } });
 	data.results = results;
