@@ -164,7 +164,7 @@ window.onload = function() {
 	startClock();
 
 	$('.item').click(function(e) {
-		const href = this.querySelector('a').textContent;
+		const href = this.querySelector('a').textContent.trim();
 		const _targetUrl = document.getElementById('targetUrl');
 		if (_targetUrl && href) {
 			_targetUrl.value = href;

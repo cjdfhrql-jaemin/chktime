@@ -4,7 +4,11 @@ import handleServerInfo from "../functions/api/server-info";
 
 const apiRoute = new Hono();
 
-apiRoute.post('/server-info', handleServerInfo);
-apiRoute.get('/ws', handleWebSocket);
+apiRoute.post('/server-info', (c) => {
+	return handleServerInfo(c) 
+});
+apiRoute.get('/ws', (c) => {
+	return handleWebSocket(c)
+});
 
 export default apiRoute;

@@ -11,20 +11,20 @@ import { jsx } from 'hono/jsx'
 
 const app = new Hono();
 
-app.notFound((c) => {
-	return c.html(
-		<Layout title="404">
-			<div class="card not-found">Not Found Page</div>
-		</Layout>, 404);
-});
-
 app.use('*', async (c, next) => {
-	const metaResponse = await handleMetaFile(c);
-    
-    if (metaResponse) {
-        return metaResponse;
+	if (c.req.path.startsWith('/api')) {
+		if (typeof next === 'function') {
+			return await next();
+		}
+		return;
 	}
-	
+
+	const metaResponse = await handleMetaFile(c);
+
+	if (metaResponse) {
+		return metaResponse;
+	}
+
 	const cf = c.req.raw.cf || {};
 	c.set('data', {
 		lang: getLanguage(cf),
@@ -32,10 +32,8 @@ app.use('*', async (c, next) => {
 		userLng: cf.longitude || 126.9780
 	});
 
-	await next();
-
-	if (c.res.status === 404 || c.res.status === 500) {
-		return c.notFound();
+	if (typeof next === 'function') {
+		await next();
 	}
 
 	const contentType = c.res.headers.get('Content-Type');
@@ -44,12 +42,20 @@ app.use('*', async (c, next) => {
 	}
 });
 
+import articleRoute from './routes/article-route.js'
+import apiRoute from './routes/api-route.js'
+import footerRoute from './routes/footer-route.js'
+
+app.route('/api', apiRoute);
+app.route('/article', articleRoute);
+app.route('/footer', footerRoute);
+
 import Domains from './functions/db/domains.js';
+import Main from './pages/main.jsx';
 
 app.get('/', async (c) => {
 	const data = c.get('data');
 	const host = c.req.header('host') || 'chktime.com';
-	const Main = (await import('./pages/main.jsx')).default;
 	const domains = new Domains(c.env.DB);
 	const results = await domains.getList({ orders: { hit_count: 'desc' } });
 	data.results = results;
@@ -61,12 +67,11 @@ app.get('/', async (c) => {
 	);
 });
 
-import articleRoute from './routes/article-route.js'
-import apiRoute from './routes/api-route.js'
-import footerRoute from './routes/footer-route.js'
-
-app.route('/api', apiRoute);
-app.route('/article', articleRoute);
-app.route('/footer', footerRoute);
+app.notFound((c) => {
+	return c.html(
+		<Layout title="404">
+			<div class="card not-found">Not Found Page</div>
+		</Layout>, 404);
+});
 
 export default app;
